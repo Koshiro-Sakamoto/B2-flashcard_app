@@ -34,7 +34,6 @@ class _CardListPageState extends State<CardListPage> {
             ),
           ],
         );
-        ;
       },
     );
   }
