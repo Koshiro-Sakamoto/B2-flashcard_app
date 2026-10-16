@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/flashcard.dart';
 import '../models/flashcard.dart';
 import '../models/genre.dart';
+import '../providers.dart';
 
-class CardListPage extends StatefulWidget {
+class CardListPage extends ConsumerWidget {
   const CardListPage({super.key, required this.genre});
 
   final Genre genre;
 
-  @override
-  State<CardListPage> createState() => _CardListPageState();
-}
-
-class _CardListPageState extends State<CardListPage> {
   void activateModal(BuildContext context, Flashcard content) {
     showDialog(
       context: context,
@@ -22,7 +18,7 @@ class _CardListPageState extends State<CardListPage> {
           title: Text(
             content.question,
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           content: Text(content.answer),
           actions: [
@@ -39,13 +35,14 @@ class _CardListPageState extends State<CardListPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final flashcardList = ref.watch(flashcardProvider);
     final shownList = flashcardList
-        .where((card) => card.genre.id == widget.genre.id)
+        .where((card) => card.genre.id == genre.id)
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.genre.title)),
+      appBar: AppBar(title: Text(genre.title)),
 
       body: ListView.builder(
         itemCount: shownList.length,
@@ -61,7 +58,7 @@ class _CardListPageState extends State<CardListPage> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed('/card_add', arguments: widget.genre);
+          Navigator.of(context).pushNamed('/card_add', arguments: genre);
         },
         child: const Icon(Icons.add),
       ),
