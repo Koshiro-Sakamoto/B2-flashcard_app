@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../data/genre.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class GenreListPage extends StatelessWidget {
+import '../providers.dart';
+
+class GenreListPage extends ConsumerWidget {
   const GenreListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final genreList = ref.watch(genreProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('ジャンル選択')),
       body: ListView.builder(

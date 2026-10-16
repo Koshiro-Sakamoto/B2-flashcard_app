@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'models/genre.dart';
 import 'pages/card_add.dart';
@@ -6,7 +7,7 @@ import 'pages/card_list.dart';
 import 'pages/genre_list.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
