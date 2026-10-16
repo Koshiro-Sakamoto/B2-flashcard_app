@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/flashcard.dart';
-import '../data/genre.dart';
-import '../models/flashcard.dart';
 import '../models/genre.dart';
+import '../providers.dart';
 
-class CardAddPage extends StatefulWidget {
+class CardAddPage extends ConsumerStatefulWidget {
   const CardAddPage({super.key, required this.genre});
 
   final Genre genre;
 
   @override
-  State<CardAddPage> createState() => _CardAddPageState();
+  ConsumerState<CardAddPage> createState() => _CardAddState();
 }
 
-class _CardAddPageState extends State<CardAddPage> {
+// ConsumerState に修正
+class _CardAddState extends ConsumerState<CardAddPage> {
   final formKey = GlobalKey<FormState>();
   final questionFormKey = GlobalKey<FormFieldState<String>>();
   final answerFormKey = GlobalKey<FormFieldState<String>>();
@@ -26,29 +26,15 @@ class _CardAddPageState extends State<CardAddPage> {
     selectedValue = widget.genre.id;
   }
 
-  void addCard(String question, String answer, Genre genre) {
-    flashcardList.add(
-      Flashcard(
-        id: flashcardList.length,
-        question: question,
-        answer: answer,
-        genre: genre,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final dropdownMenuItemList = <DropdownMenuItem<int>>[];
+    // WidgetRef は書かないでよい
 
-    for (var i = 0; i < genreList.length; i++) {
-      dropdownMenuItemList.add(
-        DropdownMenuItem(
-          value: genreList[i].id,
-          child: Text(genreList[i].title),
-        ),
-      );
-    }
+    final genreList = ref.watch(genreProvider);
+    final dropdownMenuItemList = genreList.map((genre) {
+      return DropdownMenuItem(value: genre.id, child: Text(genre.title));
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(title: const Text('カード追加')),
 
@@ -89,6 +75,7 @@ class _CardAddPageState extends State<CardAddPage> {
                   },
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: TextFormField(
@@ -108,6 +95,7 @@ class _CardAddPageState extends State<CardAddPage> {
                   },
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: ElevatedButton(
@@ -115,8 +103,13 @@ class _CardAddPageState extends State<CardAddPage> {
                     if (formKey.currentState!.validate()) {
                       final question = questionFormKey.currentState!.value!;
                       final answer = answerFormKey.currentState!.value!;
-                      final genre = genreList[selectedValue];
-                      addCard(question, answer, genre);
+                      final genre = genreList.firstWhere(
+                        (genre) => genre.id == selectedValue,
+                      );
+                      // NotifierProvider 経由でカードを追加する
+                      ref
+                          .read(flashcardProvider.notifier)
+                          .addCard(question, answer, genre);
                       Navigator.of(context).pop();
                     }
                   },
