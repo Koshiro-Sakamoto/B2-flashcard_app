@@ -36,15 +36,7 @@ class FlashcardDatabase {
 
   Future<List<Flashcard>> getFlashcards() async {
     final List<Map<String, dynamic>> rows = await database.query('Flashcard');
-    return rows.map((row) {
-      final genre = genreList.firstWhere((genre) => genre.id == row['genreId']);
-      return Flashcard(
-        id: row['id'],
-        question: row['question'],
-        answer: row['answer'],
-        genre: genre,
-      );
-    }).toList();
+    return _rowsToFlashcards(rows);
   }
 
   Future<void> insertFlashcard(
@@ -71,5 +63,26 @@ class FlashcardDatabase {
         flashcard.genre,
       );
     }
+  }
+
+  Future<List<Flashcard>> getFlashcardsByGenre(int genreId) async {
+    final List<Map<String, dynamic>> rows = await database.query(
+      'Flashcard',
+      where: 'genreId = ?',
+      whereArgs: [genreId],
+    );
+    return _rowsToFlashcards(rows);
+  }
+
+  List<Flashcard> _rowsToFlashcards(List<Map<String, dynamic>> rows) {
+    return rows.map((row) {
+      final genre = genreList.firstWhere((genre) => genre.id == row['genreId']);
+      return Flashcard(
+        id: row['id'],
+        question: row['question'],
+        answer: row['answer'],
+        genre: genre,
+      );
+    }).toList();
   }
 }

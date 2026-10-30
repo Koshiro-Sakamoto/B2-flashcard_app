@@ -12,3 +12,7 @@ final genreProvider = Provider<List<Genre>>((ref) => genreList);
 final flashcardProvider = FutureProvider<List<Flashcard>>(
   (ref) => FlashcardDatabase().getFlashcards(),
 );
+
+final flashcardsByGenreProvider = FutureProvider.family<List<Flashcard>, int>(
+  (ref, genreId) => FlashcardDatabase().getFlashcardsByGenre(genreId),
+);

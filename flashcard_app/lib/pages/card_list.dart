@@ -36,16 +36,13 @@ class CardListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final flashcardListAsync = ref.watch(flashcardProvider);
+    final shownListAsync = ref.watch(flashcardsByGenreProvider(genre.id));
     return Scaffold(
       appBar: AppBar(title: Text(genre.title)),
-      body: flashcardListAsync.when(
+      body: shownListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('エラーが発生しました: $err')),
-        data: (flashcardList) {
-          final shownList = flashcardList
-              .where((card) => card.genre.id == genre.id)
-              .toList();
+        data: (shownList) {
           return ListView.builder(
             itemCount: shownList.length,
             itemBuilder: (context, index) => Card(

@@ -112,7 +112,9 @@ class _CardAddState extends ConsumerState<CardAddPage> {
                         answer,
                         genre,
                       );
-                      ref.invalidate(flashcardProvider);
+                      ref
+                        ..invalidate(flashcardProvider)
+                        ..invalidate(flashcardsByGenreProvider(genre.id));
                       if (!context.mounted) return;
                       Navigator.of(context).pop();
                     }
