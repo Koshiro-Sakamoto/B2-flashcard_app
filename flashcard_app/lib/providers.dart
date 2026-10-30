@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'data/flashcard.dart';
+// import 'data/flashcard.dart';
 import 'data/genre.dart';
 import 'flashcard_database.dart';
 import 'models/flashcard.dart';
