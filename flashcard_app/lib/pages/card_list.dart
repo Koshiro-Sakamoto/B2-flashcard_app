@@ -36,26 +36,29 @@ class CardListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final flashcardList = ref.watch(flashcardProvider);
-    final shownList = flashcardList
-        .where((card) => card.genre.id == genre.id)
-        .toList();
-
+    final flashcardListAsync = ref.watch(flashcardProvider);
     return Scaffold(
       appBar: AppBar(title: Text(genre.title)),
-
-      body: ListView.builder(
-        itemCount: shownList.length,
-        itemBuilder: (context, index) => Card(
-          child: ListTile(
-            title: Text(shownList[index].question),
-            onTap: () {
-              activateModal(context, shownList[index]);
-            },
-          ),
-        ),
+      body: flashcardListAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('エラーが発生しました: $err')),
+        data: (flashcardList) {
+          final shownList = flashcardList
+              .where((card) => card.genre.id == genre.id)
+              .toList();
+          return ListView.builder(
+            itemCount: shownList.length,
+            itemBuilder: (context, index) => Card(
+              child: ListTile(
+                title: Text(shownList[index].question),
+                onTap: () {
+                  activateModal(context, shownList[index]);
+                },
+              ),
+            ),
+          );
+        },
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed('/card_add', arguments: genre);
