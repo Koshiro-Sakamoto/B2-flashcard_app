@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'data/flashcard.dart';
+import 'flashcard_database.dart';
 import 'models/genre.dart';
 import 'pages/card_add.dart';
 import 'pages/card_list.dart';
 import 'pages/genre_list.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlashcardDatabase().initDatabase();
+  await FlashcardDatabase().seedInitialFlashcardsIfEmpty(flashcardList);
   runApp(const ProviderScope(child: MyApp()));
 }
 
