@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../flashcardcard_database.dart';
 import '../models/genre.dart';
 import '../providers.dart';
 
@@ -99,17 +100,23 @@ class _CardAddState extends ConsumerState<CardAddPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    // async を追加
                     if (formKey.currentState!.validate()) {
                       final question = questionFormKey.currentState!.value!;
                       final answer = answerFormKey.currentState!.value!;
                       final genre = genreList.firstWhere(
                         (genre) => genre.id == selectedValue,
                       );
-                      // NotifierProvider 経由でカードを追加する
-                      ref
-                          .read(flashcardProvider.notifier)
-                          .addCard(question, answer, genre);
+                      // データベースにカードを追加する
+                      await FlashcardDatabase().insertFlashcard(
+                        question,
+                        answer,
+                        genre,
+                      );
+                      // データベースの変更をプロバイダに伝え、再取得を行う
+                      ref.invalidate(flashcardProvider);
+                      if (!context.mounted) return;
                       Navigator.of(context).pop();
                     }
                   },

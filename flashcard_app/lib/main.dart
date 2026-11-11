@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'data/flashcard.dart';
+import 'flashcardcard_database.dart';
 import 'models/genre.dart';
 import 'pages/card_add.dart';
 import 'pages/card_list.dart';
 import 'pages/genre_list.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // データベースの初期化
+  await FlashcardDatabase().initDatabase();
+  // 初回起動時のみ、初期データを投入する
+  await FlashcardDatabase().seedInitialFlashcardsIfEmpty(flashcardList);
   runApp(const ProviderScope(child: MyApp()));
 }
 
